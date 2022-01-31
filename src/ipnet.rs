@@ -120,6 +120,25 @@ impl fmt::Display for PrefixLenError {
 impl Error for PrefixLenError {}
 
 impl IpNet {
+    /// Creates a new IP network address from an `IpAddr` and prefix
+    /// length.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::net::Ipv4Addr;
+    /// use ipnet::{Ipv4Net, PrefixLenError};
+    ///
+    /// let net = IpNet::new(Ipv4Addr::new(10, 1, 1, 0).into(), 24));
+    /// assert!(net.is_ok());
+    /// ```
+    pub fn new(ip: IpAddr, prefix_len: u8) -> Result<IpNet, PrefixLenError> {
+        Ok(match ip {
+            IpAddr::V4(a) => Ipv4Net::new(a, prefix_len)?.into(),
+            IpAddr::V6(a) => Ipv6Net::new(a, prefix_len)?.into(),
+        })
+    }
+
     /// Returns a copy of the network with the address truncated to the
     /// prefix length.
     ///
